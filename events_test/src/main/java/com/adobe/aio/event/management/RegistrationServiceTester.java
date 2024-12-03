@@ -15,6 +15,7 @@ import com.adobe.aio.event.management.model.EventsOfInterest;
 import com.adobe.aio.event.management.model.EventsOfInterestInputModel;
 import com.adobe.aio.event.management.model.Registration;
 import com.adobe.aio.event.management.model.RegistrationCreateModel;
+import com.adobe.aio.event.management.model.SubscriberFilterInputModel;
 import com.adobe.aio.util.WorkspaceUtil;
 import com.adobe.aio.workspace.Workspace;
 import java.net.MalformedURLException;
@@ -22,6 +23,7 @@ import java.net.URL;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +57,11 @@ public class RegistrationServiceTester {
                     .providerId(providerId);
   }
 
+  public static SubscriberFilterInputModel.Builder getTestSubscriberFilterBuilder(
+      JsonNode subscriberFilter) {
+    return SubscriberFilterInputModel.builder().subscriberFilter(subscriberFilter);
+  }
+
   public Registration createOrUpdateJournalRegistration(String registrationName,
       String providerId, String eventCode){
     return createOrUpdateRegistration(RegistrationCreateModel.builder()
@@ -62,6 +69,17 @@ public class RegistrationServiceTester {
           .description(TEST_DESCRIPTION)
           .deliveryType(DELIVERY_TYPE_JOURNAL)
           .addEventsOfInterests(getTestEventsOfInterestBuilder(providerId, eventCode).build()));
+  }
+
+  public Registration createOrUpdateJournalRegistration(
+      String registrationName, String providerId, String eventCode, JsonNode subscriberFilter) {
+    return createOrUpdateRegistration(
+        RegistrationCreateModel.builder()
+            .name(registrationName)
+            .description(TEST_DESCRIPTION)
+            .deliveryType(DELIVERY_TYPE_JOURNAL)
+            .addEventsOfInterests(getTestEventsOfInterestBuilder(providerId, eventCode).build())
+            .addSubscriberFilters(getTestSubscriberFilterBuilder(subscriberFilter).build()));
   }
 
   public Registration createOrUpdateRuntimeWebhookRegistration(String registrationName, String providerId,
